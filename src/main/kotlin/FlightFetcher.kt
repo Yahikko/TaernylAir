@@ -1,8 +1,8 @@
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicInteger
 
 private const val BASE_URL = "http://kotlin-book.bignerdranch.com/2e"
 private const val FLIGHT_ENDPOINT = "$BASE_URL/flight"
@@ -11,27 +11,29 @@ private const val LOYALTY_ENDPOINT = "$BASE_URL/loyalty"
 fun main() {
 
     val passengersPerFlight = 75
-    val numberOfLight = 1000
-    val checkedInPassengers = atomic(0)
+    val numberOfLight = 5000
+    val checkedInPassengers = AtomicInteger(0)
 
     runBlocking {
         repeat(numberOfLight) {
             launch(Dispatchers.Default) {
-                checkedInPassengers += passengersPerFlight
+                repeat(passengersPerFlight) {
+                    checkedInPassengers.incrementAndGet()
+                }
             }
         }
     }
 
     println(checkedInPassengers)
 
-        runBlocking {
+    /*    runBlocking {
             println("Started")
             launch {
                 val flight = fetchFlight("Madrigal")
                 println(flight)
             }
             println("Finished")
-        }
+        }*/
 }
 
 
